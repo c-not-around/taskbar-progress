@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
@@ -57,8 +57,8 @@ namespace TaskbarProgress
         private static ITaskbarList3        _Instance;
         private static IntPtr               _Handle    = IntPtr.Zero;
         private static TaskbarProgressState _State;
-        private static int                  _Maximmum;
-        private static int                  _Value;
+        private static ulong                _Maximmum;
+        private static ulong                _Value;
         #endregion
 
         #region Properties
@@ -81,7 +81,7 @@ namespace TaskbarProgress
             }
         }
 
-        public static int ProgressMaximmum
+        public static ulong ProgressMaximmum
         {
             get
             {
@@ -93,12 +93,12 @@ namespace TaskbarProgress
                 if (_Supported && _Handle != IntPtr.Zero && value != _Maximmum)
                 {
                     _Maximmum = value;
-                    _Instance.SetProgressValue(_Handle, (ulong)_Value, (ulong)_Maximmum);
+                    _Instance.SetProgressValue(_Handle, _Value, _Maximmum);
                 }
             }
         }
 
-        public static int ProgressValue
+        public static ulong ProgressValue
         {
             get
             {
@@ -110,7 +110,7 @@ namespace TaskbarProgress
                 if (_Supported && _Handle != IntPtr.Zero && value != _Value)
                 {
                     _Value = value;
-                    _Instance.SetProgressValue(_Handle, (ulong)_Value, (ulong)_Maximmum);
+                    _Instance.SetProgressValue(_Handle, _Value, _Maximmum);
                 }
             }
         }
@@ -119,7 +119,7 @@ namespace TaskbarProgress
         #region Methods
         public static void ProgressInit()
         {
-            if (_Supported)
+            if (_Supported && _Handle == IntPtr.Zero)
             {
                 _Instance = (ITaskbarList3)(new TaskbarInstance());
                 _Handle   = Process.GetCurrentProcess().MainWindowHandle;
@@ -137,7 +137,7 @@ namespace TaskbarProgress
                 _Maximmum = 0;
                 _Value    = 0;
                 _Instance.SetProgressState(_Handle, _State);
-                _Instance.SetProgressValue(_Handle, (ulong)_Value, (ulong)_Maximmum);
+                _Instance.SetProgressValue(_Handle, _Value, _Maximmum);
             }
         }
         #endregion
